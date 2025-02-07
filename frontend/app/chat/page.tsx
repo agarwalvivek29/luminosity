@@ -51,7 +51,7 @@ export default function ChatPage() {
     sampleChats[0]?.id || null
   );
   const [messages, setMessages] = useState<Message[]>(sampleMessages);
-  const [things, setThings] = useState<Thing[]>([]);
+  const [things, setThings] = useState<Thing | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchData = async () => {
@@ -100,6 +100,10 @@ export default function ChatPage() {
     setMessages([]);
     // setIsNewChat(true); // Mark as a new chat
   };
+
+  // useEffect(()=>{
+  //   setThings({video: "https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/Integration.mp4"});
+  // },[])
 
   const handleSendMessage = async(content: string) => {
     // if (isNewChat) setIsNewChat(false); // Switch to normal chat mode when user sends a message
@@ -289,14 +293,14 @@ export default function ChatPage() {
               />
             )}
           </div>
-          {things && things.length > 0 && (
+          {things && (
             <div className="w-[50%]">
               <ContentViewer
                 // desmos={things[0]?.desmos}
                 // chem={things[0]?.chem}
                 // code={things[0]?.code}
-                // image={things[0]?.image}
-                video={"https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/Integration.mp4"}
+                // image={things.image}
+                // video={"https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/Integration.mp4"}
               />
             </div>
           )}
