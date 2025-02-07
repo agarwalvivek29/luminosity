@@ -36,11 +36,11 @@ export function ChatMessage({ content, role, timestamp, topic }: ChatMessageProp
           <p className="text-sm">{content}</p>
         </div>
         <div className="flex gap-2">
+          {topic && (
+            <span className="text-xs text-green-400 border-green-400/20 rounded-lg border p-1">{topic}</span>
+          )}
         {timestamp && (
           <span className="text-xs text-muted-foreground">{timestamp}</span>
-        )}
-        {topic && (
-          <span className="text-xs text-gray-900 p-1 bg-slate-500 rounded-lg">{topic}</span>
         )}
         </div>
       </div>

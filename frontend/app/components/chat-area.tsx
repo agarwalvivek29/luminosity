@@ -1,11 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import Image from "next/image";
 import { Paperclip, SendHorizontal } from "lucide-react";
 import { ChatMessage } from "./chat-message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+
+const mentionOptions = ['video', 'image', 'code', 'chem', 'vcd'];
 
 interface Message {
   id: string;
@@ -22,7 +24,10 @@ interface ChatAreaProps {
 
 export function ChatArea({ messages, onSendMessage }: ChatAreaProps) {
   const [input, setInput] = useState("");
+  const [showMentionPopup, setShowMentionPopup] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
 
@@ -33,12 +38,61 @@ export function ChatArea({ messages, onSendMessage }: ChatAreaProps) {
 
       // Check file type and set preview accordingly
       if (selectedFile.type === "application/pdf") {
-        setFilePreview("/PDF_file_icon.svg.png"); // Assuming pdf_icon.png is in the public folder
+        setFilePreview("/PDF_file_icon.svg.png");
       } else {
-        // Create a blob URL for preview
         const previewUrl = URL.createObjectURL(selectedFile);
         setFilePreview(previewUrl);
       }
+    }
+  };
+
+  const filteredOptions = useMemo(() => {
+    return mentionOptions.filter(option => 
+      option.toLowerCase().includes(mentionQuery.toLowerCase())
+    );
+  }, [mentionQuery]);
+
+  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === '@') {
+      e.preventDefault(); // Prevent '@' from being typed
+      setShowMentionPopup(true);
+      setMentionQuery('');
+    } else if (e.key === 'Escape') {
+      setShowMentionPopup(false);
+    }
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    setInput(value);
+
+    // Check if there's an ongoing mention query
+    if (showMentionPopup) {
+      const lastAtIndex = value.lastIndexOf('@');
+      if (lastAtIndex !== -1) {
+        const queryPart = value.slice(lastAtIndex + 1);
+        setMentionQuery(queryPart);
+      }
+    }
+  };
+
+  const handleMentionOptionClick = (option: string) => {
+    if (textareaRef.current) {
+      const textarea = textareaRef.current;
+      const lastAtIndex = input.lastIndexOf('@');
+      
+      // Construct the new value by keeping existing text and appending the option
+      const newValue = ` ${input.slice(0, lastAtIndex)}@${option} `;
+      
+      setInput(newValue);
+      setShowMentionPopup(false);
+      setMentionQuery('');
+      
+      // Move cursor to the end
+      setTimeout(() => {
+        textarea.setSelectionRange(newValue.length, newValue.length);
+        textarea.focus();
+      }, 0);
     }
   };
 
@@ -63,7 +117,7 @@ export function ChatArea({ messages, onSendMessage }: ChatAreaProps) {
           />
         ))}
       </div>
-      <div className="border-t p-4">
+      <div className="border-t p-4 relative">
         {filePreview && (
           <div className="mb-2 relative h-20 w-20">
             <Image
@@ -89,12 +143,38 @@ export function ChatArea({ messages, onSendMessage }: ChatAreaProps) {
             ref={fileRef}
             onChange={handleFileChange}
           />
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Send a message..."
-            className="min-h-[60px] max-h-[150px]"
-          />
+          <div className="relative w-full">
+            <Textarea
+              ref={textareaRef}
+              value={input}
+              onChange={handleTextChange}
+              onKeyDown={handleTextareaKeyDown}
+              placeholder="Send a message..."
+              className="min-h-[60px] max-h-[150px]"
+            />
+            {showMentionPopup && (
+              <div
+                className="absolute z-50 bottom-20 left-0 mt-2 bg-gray-800 
+                  border border-gray-700 rounded-md shadow-lg py-2 text-white"
+              >
+                {filteredOptions.length > 0 ? (
+                  filteredOptions.map((option) => (
+                    <div
+                      key={option}
+                      onClick={() => handleMentionOptionClick(option)}
+                      className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+                    >
+                      {option}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-4 py-2 text-gray-400">
+                    No matching options
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           <Button type="submit" size="icon" disabled={!input.trim()}>
             <SendHorizontal className="h-4 w-4" />
           </Button>
