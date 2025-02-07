@@ -12,6 +12,7 @@ interface Message {
   content: string;
   role: "assistant" | "user";
   timestamp: string;
+  topic?: string;
 }
 
 interface ChatAreaProps {
@@ -54,6 +55,7 @@ export function ChatArea({ messages, onSendMessage }: ChatAreaProps) {
       <div className="flex-1 overflow-y-auto">
         {messages.map((message) => (
           <ChatMessage
+            topic={message?.topic}
             key={message.id}
             content={message.content}
             role={message.role}

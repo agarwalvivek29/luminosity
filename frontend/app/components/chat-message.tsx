@@ -4,9 +4,10 @@ interface ChatMessageProps {
   content: string;
   role: "assistant" | "user";
   timestamp?: string;
+  topic?: string;
 }
 
-export function ChatMessage({ content, role, timestamp }: ChatMessageProps) {
+export function ChatMessage({ content, role, timestamp, topic }: ChatMessageProps) {
   const isUser = role === "user";
 
   return (
@@ -34,9 +35,14 @@ export function ChatMessage({ content, role, timestamp }: ChatMessageProps) {
         >
           <p className="text-sm">{content}</p>
         </div>
+        <div className="flex gap-2">
         {timestamp && (
           <span className="text-xs text-muted-foreground">{timestamp}</span>
         )}
+        {topic && (
+          <span className="text-xs text-gray-900 p-1 bg-slate-500 rounded-lg">{topic}</span>
+        )}
+        </div>
       </div>
     </div>
   );

@@ -21,6 +21,7 @@ interface Message {
   content: string;
   role: "assistant" | "user";
   timestamp: string;
+  topic?: string;
 }
 
 const sampleChats: Chat[] = [
@@ -89,8 +90,12 @@ export default function ChatPage() {
     // setIsNewChat(true); // Mark as a new chat
   };
 
-  const handleSendMessage = (content: string) => {
+  const handleSendMessage = async(content: string) => {
     // if (isNewChat) setIsNewChat(false); // Switch to normal chat mode when user sends a message
+
+    const { data } = await axios.post('/api/generate', { prompt: content });
+
+    console.log(data);
 
     const timestamp = new Date().toLocaleTimeString([], {
       hour: "2-digit",
@@ -102,6 +107,7 @@ export default function ChatPage() {
       content,
       role: "user",
       timestamp,
+      topic: data.response,
     };
 
     setMessages((prev) => [...prev, newMessage]);
@@ -147,25 +153,25 @@ export default function ChatPage() {
   };
 
   const things = [
-    {
-      code: `
-# Sample Code Block
+//     {
+//       code: `
+// # Sample Code Block
 
-Here is some JavaScript code:
+// Here is some JavaScript code:
 
-\`\`\`javascript
-function greet(name) {
-  return \`Hello, there!\`;
-}
-console.log(greet("Mohit"));
-\`\`\`
-`,
-      image:
-        "https://appsierra-site.s3.ap-south-1.amazonaws.com/menskool_Blog_5174c8ed71.jpg",
+// \`\`\`javascript
+// function greet(name) {
+//   return \`Hello, there!\`;
+// }
+// console.log(greet("Mohit"));
+// \`\`\`
+// `,
+//       image:
+//         "https://appsierra-site.s3.ap-south-1.amazonaws.com/menskool_Blog_5174c8ed71.jpg",
 
-      chem: "C1=CC=CC=C1",
-      desmos: true,
-    },
+//       chem: "C1=CC=CC=C1",
+//       desmos: true,
+//     },
   ];
 
   return (
