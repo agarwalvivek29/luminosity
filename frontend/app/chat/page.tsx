@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatHistory } from "@/app/components/chat-history";
 import { ChatArea } from "@/app/components/chat-area";
+import axios from "axios";
 // import cls from "../components/chat-message.module.css";
 import Navbar from "@/components/navbar";
 import { SendHorizontal } from "lucide-react";
@@ -40,6 +41,17 @@ export default function ChatPage() {
     sampleChats[0]?.id || null
   );
   const [messages, setMessages] = useState<Message[]>(sampleMessages);
+
+  const fetchData = async () => {
+    const response = await axios.get(
+      "https://7nbt3c9h-5000.inc1.devtunnels.ms/api/text"
+    );
+    console.log(response.data);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   // Fetch chats (will implement later)
   // useEffect(() => {
@@ -143,14 +155,16 @@ Here is some JavaScript code:
 
 \`\`\`javascript
 function greet(name) {
-  return \`Hello, ${name}!\`;
+  return \`Hello, there!\`;
 }
 console.log(greet("Mohit"));
 \`\`\`
 `,
       image:
         "https://appsierra-site.s3.ap-south-1.amazonaws.com/menskool_Blog_5174c8ed71.jpg",
-        
+
+      chem: "C1=CC=CC=C1",
+      desmos: true,
     },
   ];
 
@@ -237,7 +251,12 @@ console.log(greet("Mohit"));
           </div>
           {things && things.length > 0 && (
             <div className="w-[50%]">
-              <ContentViewer code={things[0].code} image={things[0].image}  />
+              <ContentViewer
+                desmos={things[0].desmos}
+                chem={things[0].chem}
+                code={things[0].code}
+                image={things[0].image}
+              />
             </div>
           )}
         </div>

@@ -57,4 +57,8 @@
     @apply bg-background text-foreground;
   }
 }
-
+/* 
+.dcg-dom-change-wrapper {
+  display: none !important;
+  opacity: 0 !important;
+} */

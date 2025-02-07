@@ -1,22 +1,25 @@
-"use client";
-
 import React, { useState } from "react";
-import { Code, Image, Video } from "lucide-react";
+import { ChartLine, Code, Image, Video, Waypoints } from "lucide-react";
 import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import remarkGfm from "remark-gfm";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-// import DesmosGraph from "./desmos";
 import Molecule from "../components/MoleculeStructure/index.jsx";
+import DesmosGraph from "./DesmosGraph";
+import VcdGraph from "./vcd";
 
 const ContentViewer = ({
   code,
   image,
   video,
+  desmos,
+  chem,
 }: {
   code?: string;
   image?: string;
   video?: string;
+  desmos?: boolean;
+  chem?: string;
 }) => {
   const [activeTab, setActiveTab] = useState("code");
   const [editingBlock, setEditingBlock] = useState<string | null>(null);
@@ -26,8 +29,9 @@ const ContentViewer = ({
     { id: "code", icon: Code, content: code, available: !!code },
     { id: "image", icon: Image, content: image, available: !!image },
     { id: "video", icon: Video, content: video, available: !!video },
-    { id: "desmos", icon: Video, content: code, available: !!code },
-    { id: "chem", icon: Video, content: code, available: !!code },
+    { id: "desmos", icon: ChartLine, content: desmos, available: !!desmos },
+    { id: "chem", icon: Waypoints, content: chem, available: !!chem },
+    { id: "vcd", icon: Video, content: code, available: !!code },
   ].filter((tab) => tab.available);
 
   return (
@@ -60,7 +64,7 @@ const ContentViewer = ({
                   const match = /language-(\w+)/.exec(className || "");
                   const codeContent = String(children).replace(/\n$/, "");
                   const blockId = inline ? null : codeContent.slice(0, 20);
-
+                  
                   if (!inline && match) {
                     return (
                       <div className="relative group">
@@ -68,7 +72,7 @@ const ContentViewer = ({
                           <div className="relative">
                             <textarea
                               value={codeContent}
-                              onChange={(e) => {
+                              onChange={(e) => {          
                                 const newContent = editContent.replace(codeContent, e.target.value);
                                 setEditContent(newContent);
                               }}
@@ -126,16 +130,20 @@ const ContentViewer = ({
             </video>
           </div>
         )}
-        {/* {activeTab === "desmos" && (
+        {activeTab === "desmos" && (
           <div className="flex justify-center">
             <DesmosGraph />
           </div>
-        )} */}
-
+        )}
         {activeTab === "chem" && (
           <div className="flex justify-center">
-            {/* <DesmosGraph /> */}
             <Molecule />
+          </div>
+        )}
+        {activeTab === "vcd" && (
+          <div className="h-full w-full">
+            {/* <DesmosGraph /> */}
+            <VcdGraph />
           </div>
         )}
       </div>

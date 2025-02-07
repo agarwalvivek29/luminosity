@@ -17,8 +17,10 @@
     "@rdkit/rdkit": "^2023.9.2-1.0.0",
     "@types/lodash": "^4.17.15",
     "3dmol": "^2.4.2",
+    "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "copy-webpack-plugin": "^11.0.0",
     "date-fns": "^4.1.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.474.0",
@@ -29,8 +31,7 @@
     "react-syntax-highlighter": "^15.6.1",
     "remark-gfm": "^4.0.0",
     "tailwind-merge": "^3.0.1",
-    "tailwindcss-animate": "^1.0.7",
-    "copy-webpack-plugin": "^11.0.0"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -39,6 +40,7 @@
     "@types/prop-types": "^15.7.14",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "eslint": "^9",
     "eslint-config-next": "15.1.0",
     "postcss": "^8",
