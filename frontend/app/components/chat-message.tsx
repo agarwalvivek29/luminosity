@@ -8,7 +8,12 @@ interface ChatMessageProps {
   topic?: string;
 }
 
-export function ChatMessage({ content, role, timestamp, topic }: ChatMessageProps) {
+export function ChatMessage({
+  content,
+  role,
+  timestamp,
+  topic,
+}: ChatMessageProps) {
   const isUser = role === "user";
 
   return (
@@ -38,14 +43,19 @@ export function ChatMessage({ content, role, timestamp, topic }: ChatMessageProp
             {content}
             </Markdown>
             </p>
+          <p className="text-sm">
+            <Markdown>{content}</Markdown>
+          </p>
         </div>
         <div className="flex gap-2">
           {topic && (
-            <span className="text-xs text-green-400 border-green-400/20 rounded-lg border p-1">{topic}</span>
+            <span className="text-xs text-green-400 border-green-400/20 rounded-lg border p-1">
+              {topic}
+            </span>
           )}
-        {timestamp && (
-          <span className="text-xs text-muted-foreground">{timestamp}</span>
-        )}
+          {timestamp && (
+            <span className="text-xs text-muted-foreground">{timestamp}</span>
+          )}
         </div>
       </div>
     </div>
