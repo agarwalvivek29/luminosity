@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 interface ChatMessageProps {
   content: string;
   role: "assistant" | "user";
@@ -29,7 +30,7 @@ export function ChatMessage({
       </Avatar>
       <div
         className={cn(
-          "flex max-w-[80%] flex-col gap-2",
+          "flex max-w-96 flex-col gap-2",
           isUser ? "items-end" : "items-start"
         )}
       >
@@ -39,7 +40,7 @@ export function ChatMessage({
             isUser ? "bg-primary text-primary-foreground" : "bg-muted"
           )}
         >
-            <Markdown className={"w-full"}>{content}</Markdown>
+            <Markdown remarkPlugins={[remarkGfm]} className={"w-full"}>{content}</Markdown>
         </div>
         <div className="flex gap-2">
           {topic && (
