@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChartLine, Code, Image, Video, Waypoints } from "lucide-react";
 import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -24,34 +24,58 @@ const ContentViewer = ({
   const [activeTab, setActiveTab] = useState("code");
   const [editingBlock, setEditingBlock] = useState<string | null>(null);
   const [editContent, setEditContent] = useState(code || '');
+  const icons = 
+    { code:  Code,
+    image: Image,
+    video: Video, 
+    desmos: ChartLine,
+    chem: Waypoints,
+    vcd: Video
+    }
 
-  const tabs = [
-    { id: "code", icon: Code, content: code, available: !!code },
-    { id: "image", icon: Image, content: image, available: !!image },
-    { id: "video", icon: Video, content: video, available: !!video },
-    { id: "desmos", icon: ChartLine, content: desmos, available: !!desmos },
-    { id: "chem", icon: Waypoints, content: chem, available: !!chem },
-    { id: "vcd", icon: Video, content: code, available: !!code },
-  ].filter((tab) => tab.available);
+  console.log("video",video);
 
   return (
     <div className="h-full border rounded-lg bg-slate-950 shadow-sm">
       <div className="flex border-b">
-        {tabs.map(({ id, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => setActiveTab(id)}
+
+          {code && <button
+            onClick={() => setActiveTab("code")}
             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors
               ${
-                activeTab === id
+                activeTab === "code"
                   ? "border-b-2 border-blue-500 text-blue-600"
                   : "text-gray-600 hover:text-gray-300"
               }`}
           >
-            <Icon className="w-4 h-4" />
-            <span className="capitalize">{id}</span>
-          </button>
-        ))}
+            <Code className="w-4 h-4" />
+            <span className="capitalize">{"Code"}</span>
+          </button>}
+          {image && <button
+            onClick={() => setActiveTab("image")}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors
+              ${
+                activeTab === "image"
+                  ? "border-b-2 border-blue-500 text-blue-600"
+                  : "text-gray-600 hover:text-gray-300"
+              }`}
+          >
+            <Image className="w-4 h-4" />
+            <span className="capitalize">{"Image"}</span>
+          </button>}
+          {video && <button
+            onClick={() => setActiveTab("video")}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors
+              ${
+                activeTab === "video"
+                  ? "border-b-2 border-blue-500 text-blue-600"
+                  : "text-gray-600 hover:text-gray-300"
+              }`}
+          >
+            <Video className="w-4 h-4" />
+            <span className="capitalize">{"Video"}</span>
+          </button>}
+        
       </div>
 
       <div className="p-4">

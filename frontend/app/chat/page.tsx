@@ -9,6 +9,7 @@ import Navbar from "@/components/navbar";
 import { SendHorizontal } from "lucide-react";
 
 import ContentViewer from "../components/Right";
+import Typing from "../components/Typing";
 
 interface Chat {
   id: string;
@@ -22,6 +23,14 @@ interface Message {
   role: "assistant" | "user";
   timestamp: string;
   topic?: string;
+}
+
+interface Thing {
+  code?: string;
+  image?: string;
+  video?: string;
+  desmos?: boolean;
+  chem?: string;
 }
 
 const sampleChats: Chat[] = [
@@ -42,6 +51,8 @@ export default function ChatPage() {
     sampleChats[0]?.id || null
   );
   const [messages, setMessages] = useState<Message[]>(sampleMessages);
+  const [things, setThings] = useState<Thing[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchData = async () => {
     const response = await axios.get(
@@ -93,21 +104,42 @@ export default function ChatPage() {
   const handleSendMessage = async(content: string) => {
     // if (isNewChat) setIsNewChat(false); // Switch to normal chat mode when user sends a message
 
-    const { data } = await axios.post('/api/generate', { prompt: content });
+    // const { data } = await axios.post('/api/generate', { prompt: content });
 
-    console.log(data);
+    // console.log(data);
 
     const timestamp = new Date().toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
     });
 
+    const isVid = content.includes("@video");
+    const isVidNum = isVid? 1: 0;
+    console.log("making backed request up")
+    setIsLoading(true);
+    axios.post(`https://splzt74b-8000.inc1.devtunnels.ms/electronics/verilog`, { prompt: content }).then((response) => {
+      console.log("hello",response.data);
+      if (isVid) {
+        console.log("setting video")
+        // setThings([{
+        //   video: "https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/Integration.mp4",
+        // }]);
+      }
+      console.log("setted things")
+    }).catch((error) => {
+      console.error("Error:", error);
+    }).finally(() => {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 10000);
+    });
+    console.log("makin backed request down")
     const newMessage: Message = {
       id: String(messages.length + 1),
       content,
       role: "user",
       timestamp,
-      topic: data.response,
+      topic: "math",
     };
 
     setMessages((prev) => [...prev, newMessage]);
@@ -152,7 +184,7 @@ export default function ChatPage() {
     setSelectedChatId(id);
   };
 
-  const things = [
+  // const things = [
 //     {
 //       code: `
 // # Sample Code Block
@@ -172,7 +204,7 @@ export default function ChatPage() {
 //       chem: "C1=CC=CC=C1",
 //       desmos: true,
 //     },
-  ];
+  // ];
 
   return (
     <>
@@ -189,6 +221,7 @@ export default function ChatPage() {
             {messages.length === 0 ? (
               <div className="flex h-full items-center justify-center p-4">
                 <div className="w-full max-w-3xl space-y-6">
+                
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -252,16 +285,18 @@ export default function ChatPage() {
                 messages={messages}
                 onSendMessage={handleSendMessage}
                 // isNewChat={isNewChat}
+                isLoading={isLoading}
               />
             )}
           </div>
           {things && things.length > 0 && (
             <div className="w-[50%]">
               <ContentViewer
-                desmos={things[0].desmos}
-                chem={things[0].chem}
-                code={things[0].code}
-                image={things[0].image}
+                // desmos={things[0]?.desmos}
+                // chem={things[0]?.chem}
+                // code={things[0]?.code}
+                // image={things[0]?.image}
+                video={"https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/Integration.mp4"}
               />
             </div>
           )}

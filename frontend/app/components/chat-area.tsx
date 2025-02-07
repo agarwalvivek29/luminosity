@@ -6,6 +6,7 @@ import { Paperclip, SendHorizontal } from "lucide-react";
 import { ChatMessage } from "./chat-message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import Typing from "./Typing";
 
 const mentionOptions = ['video', 'image', 'code', 'chem', 'vcd'];
 
@@ -20,9 +21,10 @@ interface Message {
 interface ChatAreaProps {
   messages: Message[];
   onSendMessage: (content: string) => void;
+  isLoading: boolean;
 }
 
-export function ChatArea({ messages, onSendMessage }: ChatAreaProps) {
+export function ChatArea({ messages, onSendMessage, isLoading }: ChatAreaProps) {
   const [input, setInput] = useState("");
   const [showMentionPopup, setShowMentionPopup] = useState(false);
   const [mentionQuery, setMentionQuery] = useState("");
@@ -117,6 +119,7 @@ export function ChatArea({ messages, onSendMessage }: ChatAreaProps) {
           />
         ))}
       </div>
+      {isLoading && <Typing />}
       <div className="border-t p-4 relative">
         {filePreview && (
           <div className="mb-2 relative h-20 w-20">
