@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
         }
 
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-thinking-exp" });
 
         const result = await model.generateContent(`
           You are a content classifier assistant. For the given user's prompt, determine which one of these five categories it falls into:

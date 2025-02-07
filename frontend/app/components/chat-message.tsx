@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import Markdown from "react-markdown";
 interface ChatMessageProps {
   content: string;
   role: "assistant" | "user";
@@ -33,7 +34,10 @@ export function ChatMessage({ content, role, timestamp, topic }: ChatMessageProp
             isUser ? "bg-primary text-primary-foreground" : "bg-muted"
           )}
         >
-          <p className="text-sm">{content}</p>
+          <p className="text-sm"><Markdown>
+            {content}
+            </Markdown>
+            </p>
         </div>
         <div className="flex gap-2">
           {topic && (

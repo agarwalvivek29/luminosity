@@ -14,32 +14,45 @@ const ContentViewer = ({
   video,
   desmos,
   chem,
+  vcd
 }: {
   code?: string;
   image?: string;
   video?: string;
   desmos?: boolean;
   chem?: string;
+  vcd?: string;
 }) => {
-  const [activeTab, setActiveTab] = useState("code");
+  const initialTab = code
+    ? "code"
+    : image
+    ? "image"
+    : video
+    ? "video"
+    : desmos
+    ? "desmos"
+    : chem
+    ? "chem"
+    : "vcd";
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [editingBlock, setEditingBlock] = useState<string | null>(null);
-  const [editContent, setEditContent] = useState(code || '');
-  const icons = 
-    { code:  Code,
+  const [editContent, setEditContent] = useState(code || "");
+  const icons = {
+    code: Code,
     image: Image,
-    video: Video, 
+    video: Video,
     desmos: ChartLine,
     chem: Waypoints,
-    vcd: Video
-    }
+    vcd: Video,
+  };
 
-  console.log("video",video);
+  console.log("video", video);
 
   return (
     <div className="h-full border rounded-lg bg-slate-950 shadow-sm">
       <div className="flex border-b">
-
-          {code && <button
+        {code && (
+          <button
             onClick={() => setActiveTab("code")}
             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors
               ${
@@ -50,8 +63,10 @@ const ContentViewer = ({
           >
             <Code className="w-4 h-4" />
             <span className="capitalize">{"Code"}</span>
-          </button>}
-          {image && <button
+          </button>
+        )}
+        {image && (
+          <button
             onClick={() => setActiveTab("image")}
             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors
               ${
@@ -62,8 +77,10 @@ const ContentViewer = ({
           >
             <Image className="w-4 h-4" />
             <span className="capitalize">{"Image"}</span>
-          </button>}
-          {video && <button
+          </button>
+        )}
+        {video && (
+          <button
             onClick={() => setActiveTab("video")}
             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors
               ${
@@ -74,8 +91,51 @@ const ContentViewer = ({
           >
             <Video className="w-4 h-4" />
             <span className="capitalize">{"Video"}</span>
-          </button>}
-        
+          </button>
+        )}
+        {desmos && (
+          <button
+            onClick={() => setActiveTab("desmos")}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors
+              ${
+                activeTab === "desmos"
+                  ? "border-b-2 border-blue-500 text-blue-600"
+                  : "text-gray-600 hover:text-gray-300"
+              }`}
+          >
+            <ChartLine className="w-4 h-4" />
+            <span className="capitalize">{"Desmos"}</span>
+          </button>
+        )}
+        {chem && (
+          <button
+            onClick={() => setActiveTab("chem")}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors
+              ${
+                activeTab === "chem"
+                  ? "border-b-2 border-blue-500 text-blue-600"
+                  : "text-gray-600 hover:text-gray-300"
+              }`}
+          >
+            <Waypoints className="w-4 h-4" />
+            <span className="capitalize">{"Chem"}</span>
+          </button>
+        )}
+        {vcd && (
+          <button
+            onClick={() => setActiveTab("vcd")}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors
+              ${
+                activeTab === "vcd"
+                  ? "border-b-2 border-blue-500 text-blue-600"
+                  : "text-gray-600 hover:text-gray-300"
+              }`}
+          >
+            <Waypoints className="w-4 h-4" />
+            <span className="capitalize">{"Vcd"}</span>
+          </button>
+        )}
+
       </div>
 
       <div className="p-4">
@@ -88,7 +148,7 @@ const ContentViewer = ({
                   const match = /language-(\w+)/.exec(className || "");
                   const codeContent = String(children).replace(/\n$/, "");
                   const blockId = inline ? null : codeContent.slice(0, 20);
-                  
+
                   if (!inline && match) {
                     return (
                       <div className="relative group">
@@ -96,8 +156,11 @@ const ContentViewer = ({
                           <div className="relative">
                             <textarea
                               value={codeContent}
-                              onChange={(e) => {          
-                                const newContent = editContent.replace(codeContent, e.target.value);
+                              onChange={(e) => {
+                                const newContent = editContent.replace(
+                                  codeContent,
+                                  e.target.value
+                                );
                                 setEditContent(newContent);
                               }}
                               className="w-full min-h-[100px] p-4 bg-slate-900 text-gray-200 font-mono text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -144,7 +207,7 @@ const ContentViewer = ({
         )}
         {activeTab === "image" && image && (
           <div className="flex justify-center">
-            <img src={image} alt="Content" className="max-w-full h-auto" />
+            <img src={image} alt="Content" className="max-w-full h-auto bg-white" />
           </div>
         )}
         {activeTab === "video" && video && (
@@ -167,7 +230,7 @@ const ContentViewer = ({
         {activeTab === "vcd" && (
           <div className="h-full w-full">
             {/* <DesmosGraph /> */}
-            <VcdGraph />
+            <VcdGraph vcd={vcd} />
           </div>
         )}
       </div>
