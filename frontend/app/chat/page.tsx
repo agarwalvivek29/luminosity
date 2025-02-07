@@ -35,15 +35,15 @@ interface Thing {
 }
 
 const sampleChats: Chat[] = [
-  { id: "1", title: "das", timestamp: "2024-02-06" },
-  { id: "2", title: "cxz", timestamp: "2024-02-06" },
-  { id: "3", title: "dfds", timestamp: "2024-02-06" },
-  { id: "4", title: "ewq", timestamp: "2024-02-06" },
+  { id: "1", title: "dasdas", timestamp: "2024-02-07" },
+  // { id: "2", title: "cxz", timestamp: "2024-02-06" },
+  // { id: "3", title: "dfds", timestamp: "2024-02-06" },
+  // { id: "4", title: "ewq", timestamp: "2024-02-06" },
 ];
 
 const sampleMessages: Message[] = [
-  { id: "1", content: "Hello!", timestamp: "2024-02-06", role: "assistant" },
-  { id: "2", content: "Hi there!", timestamp: "2024-02-06", role: "user" },
+  { id: "1", content: "Hello!", timestamp: "2024-02-07", role: "assistant" },
+  { id: "2", content: "Can u generate me a 3d model of glucose??", timestamp: "2024-02-07", role: "user" },
 ];
 
 export default function ChatPage() {
@@ -52,7 +52,7 @@ export default function ChatPage() {
     sampleChats[0]?.id || null
   );
   const [messages, setMessages] = useState<Message[]>(sampleMessages);
-  const [things, setThings] = useState<Thing | null>(null);
+  const [things, setThings] = useState<Thing | null>({chem: "C1=CC=CC=C1"});
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchData = async () => {
@@ -357,7 +357,7 @@ export default function ChatPage() {
             <div className="w-[50%]">
               <ContentViewer
                 desmos={things?.desmos}
-                chem={things?.chem}
+                chem={things?.chem || "dsa"}
                 code={things?.code}
                 image={things?.image}
                 video={things?.video}

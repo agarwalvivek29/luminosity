@@ -13,7 +13,7 @@ const ContentViewer = ({
   image,
   video,
   desmos,
-  chem,
+  chem="dsa",
   vcd
 }: {
   code?: string;
@@ -207,7 +207,7 @@ const ContentViewer = ({
         )}
         {activeTab === "image" && image && (
           <div className="flex justify-center">
-            <img src={image} alt="Content" className="max-w-full h-auto bg-white" />
+            <img src={image} alt="Content" className="max-w-full h-auto bg-white min-w-[600px]" />
           </div>
         )}
         {activeTab === "video" && video && (
