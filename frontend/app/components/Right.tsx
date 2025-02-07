@@ -149,7 +149,7 @@ const ContentViewer = ({
         )}
         {activeTab === "video" && video && (
           <div className="flex justify-center">
-            <video controls className="max-w-full">
+            <video controls className="max-w-full rounded-lg">
               <source src={video} />
             </video>
           </div>
