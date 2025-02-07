@@ -35,17 +35,11 @@ export function ChatMessage({
       >
         <div
           className={cn(
-            "rounded-xl px-4 py-2.5",
+            "rounded-xl px-4 py-2.5 max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl",
             isUser ? "bg-primary text-primary-foreground" : "bg-muted"
           )}
         >
-          <p className="text-sm"><Markdown>
-            {content}
-            </Markdown>
-            </p>
-          <p className="text-sm">
-            <Markdown>{content}</Markdown>
-          </p>
+            <Markdown className={"w-full"}>{content}</Markdown>
         </div>
         <div className="flex gap-2">
           {topic && (
