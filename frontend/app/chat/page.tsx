@@ -142,22 +142,31 @@ export default function ChatPage() {
           console.log("hello", response.data);
           if (isVid) {
             console.log("setting video");
-            setTimeout(() => {
-              setThings({
-                video:
-                  `https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/${response.data.uuid}.mp4`,
-              });
-              setIsLoading(false);
-            }, 120000);
+            const intervalId = setInterval(async () => {
+              try {
+              const res = await fetch(
+                `https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/${response.data.uuid}.mp4`
+              );
+              // If the fetch returns a valid response (non-null) then clear the interval and set things
+              if (res.ok) {
+                clearInterval(intervalId);
+                setThings({
+                video: `https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/${response.data.uuid}.mp4`,
+                });
+                setIsLoading(false);
+              }
+              // If not, do nothing and the interval will try again
+              } catch (error) {
+              console.error("Error during fetch:", error);
+              }
+            }, 10000);
           }
           console.log("setted things");
         })
         .catch((error) => {
           console.error("Error:", error);
-        })
-        .finally(() => {
           setIsLoading(false);
-        });
+        })
     } else if (data.response === "electronics") {
       axios
         .post(`https://splzt74b-8000.inc1.devtunnels.ms/electronics/verilog`, {
