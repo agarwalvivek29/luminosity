@@ -14,7 +14,7 @@ const ContentViewer = ({
   image,
   video,
   desmos,
-  chem = "dsa",
+  chem,
   vcd,
   mindmap,
 }: {

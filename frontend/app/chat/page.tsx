@@ -47,7 +47,7 @@ const sampleMessages: Message[] = [
   { id: "1", content: "Hello!", timestamp: "2024-02-07", role: "assistant" },
   {
     id: "2",
-    content: "Can u generate me a 3d model of glucose??",
+    content: "Hey!",
     timestamp: "2024-02-07",
     role: "user",
   },
@@ -60,7 +60,7 @@ export default function ChatPage() {
   );
   const [file, setFile] = useState<File | null>(null);
   const [messages, setMessages] = useState<Message[]>(sampleMessages);
-  const [things, setThings] = useState<Thing | null>({ chem: "C1=CC=CC=C1" });
+  const [things, setThings] = useState<Thing | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchData = async () => {
@@ -389,28 +389,6 @@ export default function ChatPage() {
     setSelectedChatId(id);
   };
 
-  // const things = [
-  //     {
-  //       code: `
-  // # Sample Code Block
-
-  // Here is some JavaScript code:
-
-  // \`\`\`javascript
-  // function greet(name) {
-  //   return \`Hello, there!\`;
-  // }
-  // console.log(greet("Mohit"));
-  // \`\`\`
-  // `,
-  //       image:
-  //         "https://appsierra-site.s3.ap-south-1.amazonaws.com/menskool_Blog_5174c8ed71.jpg",
-
-  //       chem: "C1=CC=CC=C1",
-  //       desmos: true,
-  //     },
-  // ];
-
   return (
     <>
       <Navbar />
@@ -499,7 +477,7 @@ export default function ChatPage() {
             <div className="w-[50%]">
               <ContentViewer
                 desmos={things?.desmos}
-                chem={things?.chem || "dsa"}
+                chem={things?.chem}
                 code={things?.code}
                 image={things?.image}
                 video={things?.video}
