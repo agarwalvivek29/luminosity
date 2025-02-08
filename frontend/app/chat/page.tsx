@@ -122,32 +122,62 @@ export default function ChatPage() {
     if (file) {
       const formData = new FormData();
       formData.append("file", file, file.name);
-      const response = await axios.post("https://splzt74b-8000.inc1.devtunnels.ms/electronics/chipdesign", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const fileType = file.name.split('.').pop()?.toLowerCase();
+      if (fileType === "kicad_pcb") {
+        // Send to the current backend
+        const response = await axios.post("https://splzt74b-8000.inc1.devtunnels.ms/electronics/chipdesign", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+  
+        
+      const timestamp3 = new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
       });
-
+      const newMessage3: Message = {
+        id: String(messages.length + 1),
+        content: response.data.message,
+        role: "assistant",
+        timestamp: timestamp3,
+      };
+  
+      setThings({
+        image: response.data.image,
+      })
+  
+      setMessages((prev) => [...prev, newMessage3]);
+  
+  
+        return;
+      } else {
+        formData.append("text", content);
+        axios.post("https://7nbt3c9h-5000.inc1.devtunnels.ms/api/rag", formData, {
+          headers: {
+            "Content-Type": "form-data",
+          },
+        }).then((response) => {
+          const timestamp3 = new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          const newMessage3: Message = {
+            id: String(messages.length + 1),
+            content: response.data.result2,
+            role: "assistant",
+            timestamp: timestamp3,
+          };
+          setMessages((prev) => [...prev, newMessage3]);
+        }).catch((error) => {
+          console.error("Error:", error);
+        }
+        ).finally(() => {
+          setIsLoading(false);
+        });
+        return;
+      }
       
-    const timestamp3 = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    const newMessage3: Message = {
-      id: String(messages.length + 1),
-      content: response.data.message,
-      role: "assistant",
-      timestamp: timestamp3,
-    };
-
-    setThings({
-      image: response.data.image,
-    })
-
-    setMessages((prev) => [...prev, newMessage3]);
-
-
-      return;
     }
 
     setIsLoading(true);
@@ -247,13 +277,13 @@ export default function ChatPage() {
             const intervalId = setInterval(async () => {
               try {
                 const res = await fetch(
-                  `https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/${response.data.uuid}.mp4`
+                  `https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/${response.data.text.uuid}.mp4`
                 );
                 // If the fetch returns a valid response (non-null) then clear the interval and set things
                 if (res.ok) {
                   clearInterval(intervalId);
                   setThings({
-                    video: `https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/${response.data.uuid}.mp4`,
+                    video: `https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/${response.data.text.uuid}.mp4`,
                   });
                   setIsLoading(false);
                 }
@@ -337,12 +367,12 @@ export default function ChatPage() {
           img: isImgNum,
         })
         .then((response) => {
-          console.log("hello inside chemistry", response.data);
+          console.log("hello inside chemistry", response.data?.text?.rd);
           if(response.data?.text?.rd){
           setThings({
             chem: response.data?.text?.rd,
           })
-        }
+        }else{
           const timestamp2 = new Date().toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
@@ -354,7 +384,7 @@ export default function ChatPage() {
             timestamp: timestamp2,
           };
           setMessages((prev) => [...prev, newMessage5]);
-          
+        }
         })
         .catch((error) => {
           console.error("Error:", error);

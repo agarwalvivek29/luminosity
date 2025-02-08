@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import Typing from "./Typing";
 
-const mentionOptions = ['video', 'image', 'code', 'chem', 'vcd', "roadmap"];
+const mentionOptions = ['video', 'image', 'code', 'vcd', "roadmap"];
 
 interface Message {
   id: string;
