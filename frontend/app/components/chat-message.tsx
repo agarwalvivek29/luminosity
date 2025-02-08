@@ -1,12 +1,20 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 interface ChatMessageProps {
   content: string;
   role: "assistant" | "user";
   timestamp?: string;
+  topic?: string;
 }
 
-export function ChatMessage({ content, role, timestamp }: ChatMessageProps) {
+export function ChatMessage({
+  content,
+  role,
+  timestamp,
+  topic,
+}: ChatMessageProps) {
   const isUser = role === "user";
 
   return (
@@ -22,21 +30,28 @@ export function ChatMessage({ content, role, timestamp }: ChatMessageProps) {
       </Avatar>
       <div
         className={cn(
-          "flex max-w-[80%] flex-col gap-2",
+          "flex max-w-96 flex-col gap-2",
           isUser ? "items-end" : "items-start"
         )}
       >
         <div
           className={cn(
-            "rounded-xl px-4 py-2.5",
+            "rounded-xl px-4 py-2.5 max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl",
             isUser ? "bg-primary text-primary-foreground" : "bg-muted"
           )}
         >
-          <p className="text-sm">{content}</p>
+            <Markdown remarkPlugins={[remarkGfm]} className={"w-full"}>{content}</Markdown>
         </div>
-        {timestamp && (
-          <span className="text-xs text-muted-foreground">{timestamp}</span>
-        )}
+        <div className="flex gap-2">
+          {topic && (
+            <span className="text-xs text-green-400 border-green-400/20 rounded-lg border p-1">
+              {topic}
+            </span>
+          )}
+          {timestamp && (
+            <span className="text-xs text-muted-foreground">{timestamp}</span>
+          )}
+        </div>
       </div>
     </div>
   );
