@@ -194,6 +194,67 @@ class Electronics:
         res["message"] = response
         return res
         
+    async def get_matlab_code(self, prompt: str):
+        completion = client.chat.completions.create(
+            model="google/gemini-2.0-flash-thinking-exp:free",
+            messages = [
+                {
+                    "role":"system",
+                    "content": "Given the following prompt, write a MATLAB code that can be used to solve the problem. The code should be well documented and should be able to solve the problem efficiently. The code should be able to handle edge cases and should be able to provide the correct output for the given input.!!Important: Make sure that the code is compatible with octavius and MATLAB. Make it such that all the graph outputs are saved into module.png"
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        )
+        response = completion.choices[0].message.content
+        pattern = r"```matlab[\s\S]*?```"
+        matlab_blocks = re.findall(pattern, response)
+        matlab_blocks = sorted(matlab_blocks, key=lambda x: len(x))
+        module = str(uuid.uuid4())
 
+        res = self.matlab_execution(module, matlab_blocks[-1][10:-3])
+        res["chat"] = response
+        return res
+    
+    async def matlab_execution(self, module, code: str):
+        codepath = f"{basepath}/{module}.m"
+        outputpath = f"{basepath}/{module}.png"
+        errors = []
+
+        code.replace("module.png", outputpath)
+
+        with open(codepath, "w") as file:
+            file.write(code)
+
+        process = await asyncio.create_subprocess_shell(
+            f"octave --silent --eval 'source {codepath}'", 
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        stdout, stderr = await process.communicate()
+
+        if stderr:
+            errors.append(f"Failed to run MATLAB Code: {stderr.decode()}")
+        output = stdout.decode()
+
+        image = None
+        if os.path.exists(outputpath):
+            utils = Utils()
+            image = utils.save_to_s3(outputpath, f"{module}.png", 'image/png')
+
+        if os.path.exists(codepath):
+            os.remove(codepath)
+        if os.path.exists(outputpath):
+            os.remove(outputpath)
+
+        return {
+            "success": True,
+            "message": output,
+            "errors": errors,
+            "image": image
+        }
+    
 # el = Electronics()
 # output = asyncio.run(el.get_verilog_code("Generate Verilog Code for Full Adder Circuit"))

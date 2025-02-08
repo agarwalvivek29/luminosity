@@ -61,6 +61,19 @@ def read_root():
 class ElecReq(BaseModel):
     prompt: str
 
+@app.post("/electronics/matlab")
+async def run_matlab_code(elec_req: ElecReq):
+    electronics = Electronics()
+    result = await electronics.get_matlab_code(elec_req.prompt)
+    return {
+        "success": True,
+        "message": result["message"],
+        "output": result["output"],
+        "errors": json.dumps(result["errors"]),
+        "image": result["image"],
+        "chat": result["chat"]
+    }
+
 @app.post("/electronics/verilog")
 async def run_verilog_code(elec_req: ElecReq):
     electronics = Electronics()
