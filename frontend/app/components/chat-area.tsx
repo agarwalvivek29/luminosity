@@ -29,7 +29,7 @@ interface ChatAreaProps {
 export function ChatArea({ messages,file, setFile, onSendMessage, isLoading }: ChatAreaProps) {
   const [input, setInput] = useState("");
   const [showMentionPopup, setShowMentionPopup] = useState(false);
-  const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionQuery, setMentionQuery] =  useState("");
   const fileRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   

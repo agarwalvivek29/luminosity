@@ -245,7 +245,7 @@ const ContentViewer = ({
         )}
         {activeTab === "chem" && (
           <div className="flex justify-center">
-            <Molecule />
+            <Molecule chem={chem} />
           </div>
         )}
         {activeTab === "vcd" && (

@@ -108,7 +108,7 @@ export default function ChatPage() {
     setSelectedChatId(newChat.id);
     setMessages([]);
     setFile(null);
-    setThings({})
+    setThings(null)
     // setIsNewChat(true); // Mark as a new chat
   };
 
@@ -119,16 +119,33 @@ export default function ChatPage() {
   const handleSendMessage = async (content: string) => {
     // if (isNewChat) setIsNewChat(false); // Switch to normal chat mode when user sends a message
 
-    if(file){
+    if (file) {
       const formData = new FormData();
-      formData.append("file", file);
-      const response = await axios.post("https://7nbt3c9h-5000.inc1.devtunnels.ms/api/pccreate", formData, {
+      formData.append("file", file, file.name);
+      const response = await axios.post("https://splzt74b-8000.inc1.devtunnels.ms/electronics/chipdesign", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      console.log("ai agent:",response.data);
+      
+    const timestamp3 = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const newMessage3: Message = {
+      id: String(messages.length + 1),
+      content: response.data.message,
+      role: "assistant",
+      timestamp: timestamp3,
+    };
+
+    setThings({
+      image: response.data.image,
+    })
+
+    setMessages((prev) => [...prev, newMessage3]);
+
 
       return;
     }
@@ -140,46 +157,45 @@ export default function ChatPage() {
     if (isRoadMap) {
       let topics: string[] = [];
       let connections: [string, string][] = [];
-        axios
-          .post("https://splzt74b-8000.inc1.devtunnels.ms/mindmaps", {
-            prompt: content,
-          })
-          .then((response) => {
-            const data = JSON.parse(response.data.flowchart);
-            console.log("parsed data", data);
-            topics = data.topics;
-            connections = data.connections;
+      axios
+        .post("https://splzt74b-8000.inc1.devtunnels.ms/mindmaps", {
+          prompt: content,
+        })
+        .then((response) => {
+          const data = JSON.parse(response.data.flowchart);
+          console.log("parsed data", data);
+          topics = data.topics;
+          connections = data.connections;
 
-            // Mock data structure
-            const mockData: MindMapData = {
-              topics: topics,
-              connections: connections,
-            };
+          // Mock data structure
+          const mockData: MindMapData = {
+            topics: topics,
+            connections: connections,
+          };
 
-            console.log("Mock data", mockData);
-            setThings({ mindMap: mockData });
+          console.log("Mock data", mockData);
+          setThings({ mindMap: mockData });
 
-            const timestamp = new Date().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            });
-
-            const newMessage: Message = {
-              id: String(messages.length + 1),
-              content:
-                response.data.message ||
-                "mc wait her will give data in morning",
-              role: "assistant",
-              timestamp,
-            };
-
-            setMessages((prev) => [...prev, newMessage]);
-          })
-          .catch((error) => {
-            console.log(error);
-          }).finally(()=>{
-            setIsLoading(false);
+          const timestamp = new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
           });
+
+          const newMessage: Message = {
+            id: String(messages.length + 1),
+            content:
+              response.data.message,
+            role: "assistant",
+            timestamp,
+          };
+
+          setMessages((prev) => [...prev, newMessage]);
+        })
+        .catch((error) => {
+          console.log(error);
+        }).finally(() => {
+          setIsLoading(false);
+        });
 
     }
     const { data } = await axios.post("/api/generate", { prompt: content });
@@ -207,7 +223,7 @@ export default function ChatPage() {
     console.log("making backed request up");
 
 
-    if (data.response === "math") {
+    if (data.response === "math"||data.response === "physics") {
       axios
         .post(`https://7nbt3c9h-5000.inc1.devtunnels.ms/api/math`, {
           text: content,
@@ -230,22 +246,34 @@ export default function ChatPage() {
             setMessages((prev) => [...prev, newMessage2]);
             const intervalId = setInterval(async () => {
               try {
-              const res = await fetch(
-                `https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/${response.data.uuid}.mp4`
-              );
-              // If the fetch returns a valid response (non-null) then clear the interval and set things
-              if (res.ok) {
-                clearInterval(intervalId);
-                setThings({
-                video: `https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/${response.data.uuid}.mp4`,
-                });
-                setIsLoading(false);
-              }
-              // If not, do nothing and the interval will try again
+                const res = await fetch(
+                  `https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/${response.data.uuid}.mp4`
+                );
+                // If the fetch returns a valid response (non-null) then clear the interval and set things
+                if (res.ok) {
+                  clearInterval(intervalId);
+                  setThings({
+                    video: `https://solace-outputs.s3.ap-south-1.amazonaws.com/innerve/${response.data.uuid}.mp4`,
+                  });
+                  setIsLoading(false);
+                }
+                // If not, do nothing and the interval will try again
               } catch (error) {
-              console.error("Error during fetch:", error);
+                console.error("Error during fetch:", error);
               }
             }, 10000);
+          } else {
+            const timestamp2 = new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+            const newMessage2: Message = {
+              id: String(messages.length + 1),
+              content: response.data.text,
+              role: "assistant",
+              timestamp: timestamp2,
+            };
+            setMessages((prev) => [...prev, newMessage2]);
           }
           console.log("setted things");
         })
@@ -286,9 +314,23 @@ export default function ChatPage() {
           console.error("Error:", error);
         })
         .finally(() => {
-            setIsLoading(false);
+          setIsLoading(false);
         });
     } else if (data.response === "chemistry") {
+      if(isImg){
+        const timestamp2 = new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      const newMessage: Message = {
+        id: String(messages.length + 1),
+        content: "Hold on while we generate the model for you...",
+        role: "assistant",
+        timestamp: timestamp2
+      };
+
+      setMessages((prev) => [...prev, newMessage]);
+    }
       axios
         .post(`https://7nbt3c9h-5000.inc1.devtunnels.ms/api/chemistry`, {
           text: content,
@@ -296,56 +338,30 @@ export default function ChatPage() {
         })
         .then((response) => {
           console.log("hello inside chemistry", response.data);
-          const responseText = response.data.message;
+          if(response.data?.text?.rd){
+          setThings({
+            chem: response.data?.text?.rd,
+          })
+        }
           const timestamp2 = new Date().toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
           });
-          const newMessage: Message = {
+          const newMessage5: Message = {
             id: String(messages.length + 1),
-            content: responseText,
+            content: response.data.text,
             role: "assistant",
-            timestamp: timestamp2
+            timestamp: timestamp2,
           };
-      
-          setMessages((prev) => [...prev, newMessage]);
+          setMessages((prev) => [...prev, newMessage5]);
+          
         })
         .catch((error) => {
           console.error("Error:", error);
         })
         .finally(() => {
-            setIsLoading(false);
+          setIsLoading(false);
         });
-      } else if (data.response === "chemistry") {
-        axios
-          .post(`https://7nbt3c9h-5000.inc1.devtunnels.ms/api/chemistry`, {
-            text: content,
-            img: isImgNum,
-          })
-          .then((response) => {
-            console.log("hello inside chemistry", response.data);
-            const responseText = response.data.message;
-            const timestamp2 = new Date().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            });
-            const newMessage: Message = {
-              id: String(messages.length + 1),
-              content: responseText,
-              role: "assistant",
-              timestamp: timestamp2
-            };
-        
-            setMessages((prev) => [...prev, newMessage]);
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          })
-          .finally(() => {
-            
-              setIsLoading(false);
-            
-          });
     }
     console.log("makin backed request down");
   };
