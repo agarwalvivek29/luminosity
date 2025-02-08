@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import Typing from "./Typing";
 
-const mentionOptions = ['video', 'image', 'code', 'chem', 'vcd'];
+const mentionOptions = ['video', 'image', 'code', 'chem', 'vcd', "roadmap"];
 
 interface Message {
   id: string;
@@ -63,6 +63,9 @@ export function ChatArea({ messages,file, setFile, onSendMessage, isLoading }: C
       setMentionQuery('');
     } else if (e.key === 'Escape') {
       setShowMentionPopup(false);
+    } else if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault(); // Prevent newline from being added
+      handleSubmit(e);
     }
   };
 
@@ -100,7 +103,7 @@ export function ChatArea({ messages,file, setFile, onSendMessage, isLoading }: C
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent | React.KeyboardEvent) => {
     e.preventDefault();
     if (input.trim()) {
       onSendMessage(input);
