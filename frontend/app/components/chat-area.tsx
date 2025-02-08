@@ -22,15 +22,17 @@ interface ChatAreaProps {
   messages: Message[];
   onSendMessage: (content: string) => void;
   isLoading: boolean;
+  file: File | null;
+  setFile: (file: File) => void;
 }
 
-export function ChatArea({ messages, onSendMessage, isLoading }: ChatAreaProps) {
+export function ChatArea({ messages,file, setFile, onSendMessage, isLoading }: ChatAreaProps) {
   const [input, setInput] = useState("");
   const [showMentionPopup, setShowMentionPopup] = useState(false);
   const [mentionQuery, setMentionQuery] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [file, setFile] = useState<File | null>(null);
+  
   const [filePreview, setFilePreview] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

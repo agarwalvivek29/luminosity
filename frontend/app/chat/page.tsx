@@ -51,6 +51,7 @@ export default function ChatPage() {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(
     sampleChats[0]?.id || null
   );
+  const [file, setFile] = useState<File | null>(null);
   const [messages, setMessages] = useState<Message[]>(sampleMessages);
   const [things, setThings] = useState<Thing | null>({chem: "C1=CC=CC=C1"});
   const [isLoading, setIsLoading] = useState(false);
@@ -99,6 +100,8 @@ export default function ChatPage() {
     setChats((prev) => [...prev, newChat]);
     setSelectedChatId(newChat.id);
     setMessages([]);
+    setFile(null);
+    setThings({})
     // setIsNewChat(true); // Mark as a new chat
   };
 
@@ -108,6 +111,21 @@ export default function ChatPage() {
 
   const handleSendMessage = async (content: string) => {
     // if (isNewChat) setIsNewChat(false); // Switch to normal chat mode when user sends a message
+
+    if(file){
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await axios.post("https://7nbt3c9h-5000.inc1.devtunnels.ms/api/pccreate", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("ai agent:",response.data);
+
+      return;
+    }
+
 
     const { data } = await axios.post("/api/generate", { prompt: content });
 
@@ -130,6 +148,8 @@ export default function ChatPage() {
 
     const isVid = content.includes("@video");
     const isVidNum = isVid ? 1 : 0;
+    const isImg = content.includes("@image");
+    const isImgNum = isImg ? 1 : 0;
     console.log("making backed request up");
     setIsLoading(true);
     if (data.response === "math") {
@@ -142,6 +162,17 @@ export default function ChatPage() {
           console.log("hello", response.data);
           if (isVid) {
             console.log("setting video");
+            const timestamp2 = new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+            const newMessage2: Message = {
+              id: String(messages.length + 1),
+              content: "Hold on while we generate the video for you...",
+              role: "assistant",
+              timestamp: timestamp2
+            };
+            setMessages((prev) => [...prev, newMessage2]);
             const intervalId = setInterval(async () => {
               try {
               const res = await fetch(
@@ -205,6 +236,37 @@ export default function ChatPage() {
             setIsLoading(false);
           }, 10000);
         });
+    } else if (data.response === "chemistry") {
+      axios
+        .post(`https://7nbt3c9h-5000.inc1.devtunnels.ms/api/chemistry`, {
+          text: content,
+          img: isImgNum,
+        })
+        .then((response) => {
+          console.log("hello inside chemistry", response.data);
+          const responseText = response.data.message;
+          const timestamp2 = new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          const newMessage: Message = {
+            id: String(messages.length + 1),
+            content: responseText,
+            role: "assistant",
+            timestamp: timestamp2
+          };
+      
+          setMessages((prev) => [...prev, newMessage]);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        })
+        .finally(() => {
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 10000);
+        });
+
     }
     
     console.log("makin backed request down");
@@ -350,6 +412,8 @@ export default function ChatPage() {
                 onSendMessage={handleSendMessage}
                 // isNewChat={isNewChat}
                 isLoading={isLoading}
+                file={file}
+                setFile={setFile}
               />
             )}
           </div>
