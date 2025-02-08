@@ -17,7 +17,7 @@ Our solution? **A fully integrated AI-driven sandbox with powerful open-source t
 
 ## 🏗️ Mixture of Agents Architecture
 
-![EdTech AI Learning Platform Architecture](https://github.com/luminosity/blob/main/architecture.png)
+![EdTech AI Learning Platform Architecture](https://github.com/agarwalvivek29/luminosity/blob/main/architecture.png)
 
 Our **Agentic Framework** brings together multiple AI specialists, each designed to tackle specific educational domains:
 
