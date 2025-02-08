@@ -10,6 +10,7 @@ import { SendHorizontal } from "lucide-react";
 
 import ContentViewer from "../components/Right";
 import Typing from "../components/Typing";
+import { MindMapData } from "@/types/mindmap";
 
 interface Chat {
   id: string;
@@ -32,6 +33,7 @@ interface Thing {
   desmos?: boolean;
   chem?: string;
   vcd?: string;
+  mindMap?: any;
 }
 
 const sampleChats: Chat[] = [
@@ -43,7 +45,12 @@ const sampleChats: Chat[] = [
 
 const sampleMessages: Message[] = [
   { id: "1", content: "Hello!", timestamp: "2024-02-07", role: "assistant" },
-  { id: "2", content: "Can u generate me a 3d model of glucose??", timestamp: "2024-02-07", role: "user" },
+  {
+    id: "2",
+    content: "Can u generate me a 3d model of glucose??",
+    timestamp: "2024-02-07",
+    role: "user",
+  },
 ];
 
 export default function ChatPage() {
@@ -52,7 +59,7 @@ export default function ChatPage() {
     sampleChats[0]?.id || null
   );
   const [messages, setMessages] = useState<Message[]>(sampleMessages);
-  const [things, setThings] = useState<Thing | null>({chem: "C1=CC=CC=C1"});
+  const [things, setThings] = useState<Thing | null>({ chem: "C1=CC=CC=C1" });
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchData = async () => {
@@ -108,7 +115,55 @@ export default function ChatPage() {
 
   const handleSendMessage = async (content: string) => {
     // if (isNewChat) setIsNewChat(false); // Switch to normal chat mode when user sends a message
+    setIsLoading(true);
 
+    const isRoadMap = content.includes("@roadmap");
+
+    if (isRoadMap) {
+      let topics: string[] = [];
+      let connections: [string, string][] = [];
+        axios
+          .post("https://splzt74b-8000.inc1.devtunnels.ms/mindmaps", {
+            prompt: content,
+          })
+          .then((response) => {
+            const data = JSON.parse(response.data.flowchart);
+            console.log("parsed data", data);
+            topics = data.topics;
+            connections = data.connections;
+
+            // Mock data structure
+            const mockData: MindMapData = {
+              topics: topics,
+              connections: connections,
+            };
+
+            console.log("Mock data", mockData);
+            setThings({ mindMap: mockData });
+
+            const timestamp = new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+
+            const newMessage: Message = {
+              id: String(messages.length + 1),
+              content:
+                response.data.message ||
+                "mc wait her will give data in morning",
+              role: "assistant",
+              timestamp,
+            };
+
+            setMessages((prev) => [...prev, newMessage]);
+          })
+          .catch((error) => {
+            console.log(error);
+          }).finally(()=>{
+            setIsLoading(false);
+          });
+
+    }
     const { data } = await axios.post("/api/generate", { prompt: content });
 
     console.log("gemini", data);
@@ -117,7 +172,6 @@ export default function ChatPage() {
       hour: "2-digit",
       minute: "2-digit",
     });
-
     const newMessage: Message = {
       id: String(messages.length + 1),
       content,
@@ -131,7 +185,8 @@ export default function ChatPage() {
     const isVid = content.includes("@video");
     const isVidNum = isVid ? 1 : 0;
     console.log("making backed request up");
-    setIsLoading(true);
+
+
     if (data.response === "math") {
       axios
         .post(`https://7nbt3c9h-5000.inc1.devtunnels.ms/api/math`, {
@@ -183,30 +238,26 @@ export default function ChatPage() {
             id: String(messages.length + 1),
             content: responseText,
             role: "assistant",
-            timestamp: timestamp2
+            timestamp: timestamp2,
           };
 
-          if(response.data?.simulation){
+          if (response.data?.simulation) {
             console.log("setting video");
             setThings({
               vcd: response.data.simulation,
               image: response.data.rtlview,
             });
           }
-          
-      
+
           setMessages((prev) => [...prev, newMessage]);
         })
         .catch((error) => {
           console.error("Error:", error);
         })
         .finally(() => {
-          setTimeout(() => {
             setIsLoading(false);
-          }, 10000);
         });
     }
-    
     console.log("makin backed request down");
   };
 
@@ -362,6 +413,7 @@ export default function ChatPage() {
                 image={things?.image}
                 video={things?.video}
                 vcd={things?.vcd}
+                mindmap={things?.mindMap}
               />
             </div>
           )}
