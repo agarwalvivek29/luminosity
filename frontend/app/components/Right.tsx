@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ChartLine, Code, Image, Video, Waypoints } from "lucide-react";
+import { ChartLine, Code, Image, Video, Waypoints, Map } from "lucide-react";
 import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import remarkGfm from "remark-gfm";
@@ -7,14 +7,16 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Molecule from "../components/MoleculeStructure/index.jsx";
 import DesmosGraph from "./DesmosGraph";
 import VcdGraph from "./vcd";
+import MindMap from "@/app/components/MindMap";
 
 const ContentViewer = ({
   code,
   image,
   video,
   desmos,
-  chem="dsa",
-  vcd
+  chem = "dsa",
+  vcd,
+  mindmap,
 }: {
   code?: string;
   image?: string;
@@ -22,6 +24,7 @@ const ContentViewer = ({
   desmos?: boolean;
   chem?: string;
   vcd?: string;
+  mindmap?: any;
 }) => {
   const initialTab = code
     ? "code"
@@ -44,6 +47,7 @@ const ContentViewer = ({
     desmos: ChartLine,
     chem: Waypoints,
     vcd: Video,
+    mindMap: Map,
   };
 
   console.log("video", video);
@@ -135,7 +139,20 @@ const ContentViewer = ({
             <span className="capitalize">{"Vcd"}</span>
           </button>
         )}
-
+        {mindmap && (
+          <button
+            onClick={() => setActiveTab("mindmap")}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors
+              ${
+                activeTab === "mindmap"
+                  ? "border-b-2 border-blue-500 text-blue-600"
+                  : "text-gray-600 hover:text-gray-300"
+              }`}
+          >
+            <Map className="w-4 h-4" />
+            <span className="capitalize">{"mindmap"}</span>
+          </button>
+        )}
       </div>
 
       <div className="p-4">
@@ -207,7 +224,11 @@ const ContentViewer = ({
         )}
         {activeTab === "image" && image && (
           <div className="flex justify-center">
-            <img src={image} alt="Content" className="max-w-full h-auto bg-white min-w-[600px]" />
+            <img
+              src={image}
+              alt="Content"
+              className="max-w-full h-auto bg-white min-w-[600px]"
+            />
           </div>
         )}
         {activeTab === "video" && video && (
@@ -231,6 +252,11 @@ const ContentViewer = ({
           <div className="h-full w-full">
             {/* <DesmosGraph /> */}
             <VcdGraph vcd={vcd} />
+          </div>
+        )}
+        {activeTab === "mindmap" && (
+          <div className="h-full w-full">
+            <MindMap initialtopic={mindmap}/>
           </div>
         )}
       </div>
