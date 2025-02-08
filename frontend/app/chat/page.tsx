@@ -362,6 +362,24 @@ export default function ChatPage() {
         .finally(() => {
           setIsLoading(false);
         });
+    } else if (data.response === "other") {
+       axios.post('/api/other', { prompt: content }).then((response) => {
+        const timestamp2 = new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const newMessage: Message = {
+          id: String(messages.length + 1),
+          content: response.data.response,
+          role: "assistant",
+          timestamp: timestamp2,
+        };
+        setMessages((prev) => [...prev, newMessage]);
+      }).catch((error) => {
+        console.error("Error:", error);
+      }).finally(() => {
+        setIsLoading(false);
+      });
     }
     console.log("makin backed request down");
   };
@@ -437,7 +455,7 @@ export default function ChatPage() {
                     <div className="flex gap-4 items-end">
                       <textarea
                         name="message"
-                        placeholder="How can Claude help you today?"
+                        placeholder="How can I help you today?"
                         className="min-h-[60px] max-h-[200px] w-full rounded-xl border border-zinc-700 bg-[#1a1a1a] p-4 text-white placeholder:text-zinc-400 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
                         rows={1}
                       />
